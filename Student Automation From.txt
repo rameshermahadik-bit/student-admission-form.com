@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Admission Form - Power Automate</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-container { background: #ffffff; width: 100%; max-width: 600px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .form-container h2 { text-align: center; margin-bottom: 25px; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
+        .radio-group { display: flex; gap: 20px; margin-top: 5px; }
+        .submit-btn { width: 100%; background-color: #007bff; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background-color: #0056b3; }
+        #statusMessage { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Student Admission Form</h2>
+    <form id="admissionForm">
+        
+        <div class="form-group">
+            <label for="studentId">Student ID</label>
+            <input type="text" id="studentId" name="studentId" placeholder="e.g. STU101" required>
+        </div>
+
+        <div class="form-group">
+            <label for="studentName">Student Name</label>
+            <input type="text" id="studentName" name="studentName" placeholder="Enter Full Name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date Of Birth</label>
+            <input type="date" id="dob" name="dob" required>
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+                <label><input type="radio" name="gender" value="Male" required> Male</label>
+                <label><input type="radio" name="gender" value="Female"> Female</label>
+                <label><input type="radio" name="gender" value="Other"> Other</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="mobile">Mobile No.</label>
+            <input type="tel" id="mobile" name="mobile" placeholder="10 digit number" pattern="[0-9]{10}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Id</label>
+            <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="course">Course</label>
+            <select id="course" name="course" required>
+                <option value="" disabled selected>Select Course</option>
+                <option value="Computer Engineering">Computer Engineering</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                <option value="Electrical Engineering">Electrical Engineering</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+            </select>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Admission Form</button>
+    </form>
+    
+    <div id="statusMessage"></div>
+</div>
+
+<script>
+    document.getElementById('admissionForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const statusDiv = document.getElementById('statusMessage');
+        statusDiv.style.color = 'blue';
+        statusDiv.innerText = 'Submitting data to Power Automate...';
+
+        // Collect Form Data
+        const formData = {
+            studentId: document.getElementById('studentId').value,
+            studentName: document.getElementById('studentName').value,
+            dob: document.getElementById('dob').value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            mobile: document.getElementById('mobile').value,
+            email: document.getElementById('email').value,
+            course: document.getElementById('course').value
+        };
+
+        // REPLACE THIS WITH YOUR POWER AUTOMATE HTTP POST URL
+        const powerAutomateUrl = "YOUR_POWER_AUTOMATE_WEBHOOK_URL_HERE";
+
+        try {
+            const response = await fetch(powerAutomateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                statusDiv.style.color = 'green';
+                statusDiv.innerText = 'Form submitted successfully & Saved to Excel!';
+                document.getElementById('admissionForm').reset();
+            } else {
+                statusDiv.style.color = 'red';
+                statusDiv.innerText = 'Error submitting form. Please check Power Automate Flow.';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            statusDiv.style.color = 'red';
+            statusDiv.innerText = 'Network error or URL missing!';
+        }
+    });
+</script>
+
+</body>
+</html>
